@@ -1,0 +1,101 @@
+﻿<Window x:Class="TerrainGeneratorSinglePage.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TerrainGeneratorSinglePage"
+        mc:Ignorable="d"
+        Title="TerrainGenerator" Height="900" Width="1600" Background="#333333" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
+    <Grid KeyDown="Grid_KeyDown" MouseWheel="Grid_MouseWheel">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="800"/>
+            <ColumnDefinition Width="800"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="650"/>
+            <RowDefinition Height="250"/>
+        </Grid.RowDefinitions>
+
+        <Label Content="W - Rotate upwards | S - Rotate downwards | A - Rotate left | D - Rotate right | " FontSize="20" Foreground="Wheat" Margin="0,0,0,605"/>
+        <Label Content="E - Rotates clockwise | Q - Rotates anti-clockwise" FontSize="20" Foreground="Wheat" Margin="2,18,798,591" RenderTransformOrigin="0.5,0.5" Grid.ColumnSpan="2"/>
+
+        <Rectangle Grid.Column="0" Height="550" Width="700" Grid.Row="0" Fill="Black"/>
+        <Viewport3D Grid.Column="0" Grid.Row="0" Name="viewport" Height="550" Width="700" Margin="50,25,50,25">
+            <Viewport3D.Camera>
+                <PerspectiveCamera x:Name="Camera" FieldOfView="45"
+                                   Position="0, 0, 2048" LookDirection="0, 0, -1"
+                                   FarPlaneDistance="50000" NearPlaneDistance="0"/>
+            </Viewport3D.Camera>
+            <ModelVisual3D>
+                <ModelVisual3D.Content>
+                    <Model3DGroup x:Name="MyModel3DGroup">
+                    </Model3DGroup>
+                </ModelVisual3D.Content>
+            </ModelVisual3D>
+        </Viewport3D>
+
+        <Label Content="Diamond Square Terrain" FontSize="20" Foreground="Wheat" Grid.Column="0" Margin="46,643,526,215" Grid.RowSpan="2"/>
+        <Label Content="Detail" FontSize="20" Foreground="Wheat" Grid.Column="0" Grid.Row="1" Margin="50,32,660,164"/>
+        <TextBox Text="{Binding Path=Details, Mode=TwoWay}" FontSize="20" Grid.Column="0" Grid.Row="1" Height="30" Margin="132,36,611,184"/>
+        <Slider Maximum="12" Minimum="1" IsSnapToTickEnabled="True" TickPlacement="BottomRight" Ticks="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12" AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="2" Grid.Column="0" Value="{Binding Path=Details, Mode=TwoWay}" Grid.Row="1" Height="30" Margin="203,39,480,181"/>
+
+        <Label Content="Roughness" FontSize="20" Foreground="Wheat" Grid.Column="0" Grid.Row="1" Margin="10,86,668,122"/>
+        <TextBox Text="{Binding Path=Roughness, Mode=TwoWay}" FontSize="20" Grid.Column="0" Grid.Row="1" Height="30" Margin="132,95,602,125"/>
+        <Slider Maximum="1" Minimum="0" Value="{Binding Path=Roughness, Mode=TwoWay}" Grid.Row="1" Margin="203,100,480,130"/>
+
+        <Button Height="30" Content="Generate Terrain" Click="Button_Click_GenerateTerrain" Width="123" Margin="95,149,582,71" Grid.Row="1"/>
+        <Button Height="30" Content="Reset Camera" Click="Button_Click_Reset" Width="123" Margin="349,610,328,10"/>
+
+        <Image Name="noiseImage" Grid.Column="1" Grid.Row="0" Margin="50,50,50,50" Width="700" Height="550"/>
+        <Button Content="GenerateNoise" Height="30" Width="123" Click="Button_Click_GenerateNoise" Grid.Row="1" Grid.Column="1" Margin="24,182,654,38"/>
+
+        <Label Content="Cellular" FontSize="20" Foreground="Wheat" Grid.Column="1" Margin="59,643,659,215" Grid.RowSpan="2"/>
+        <Label Content="Enabled" FontSize="20" Foreground="Wheat" Grid.Column="1" Grid.Row="1" Margin="44,20,674,188"/>
+        <CheckBox Height="15" Width="16" Grid.Column="1" Margin="141,32,643,203" Grid.Row="1" IsChecked="{Binding Path=CellularEnabled, Mode=TwoWay}"/>
+        <Label Content="Random Seed" FontSize="20" Foreground="Wheat" Grid.Column="1" Grid.Row="1" Margin="0,46,664,162"/>
+        <CheckBox Height="15" Width="16" Grid.Column="1" Margin="141,59,643,176" Grid.Row="1" IsChecked="{Binding Path=CellularRandomSeed, Mode=TwoWay}"/>
+        <Label Content="Seed" FontSize="20" Foreground="Wheat" Grid.Column="1" Grid.Row="1" Margin="54,86,685,122"/>
+        <TextBox Text="{Binding Path=CellularSeed, Mode=TwoWay}" FontSize="20" Grid.Column="1" Grid.Row="1" Height="30" Margin="115,92,628,128"/>
+        <Label Content="Frequency" FontSize="20" Foreground="Wheat" Grid.Column="1" Grid.Row="1" Margin="10,133,668,75"/>
+        <TextBox Text="{Binding Path=CellularFrequency, Mode=TwoWay}" FontSize="20" Grid.Column="1" Grid.Row="1" Height="30" Margin="109,139,618,81"/>
+        <Slider Maximum="0.02" Minimum="0.002"  Grid.Column="1" Value="{Binding Path=CellularFrequency, Mode=TwoWay}" Grid.Row="1" Margin="187,142,528,85" ValueChanged="Slider_ValueChangedCellular"/>
+
+        <Label Content="Simplex" FontSize="20" Foreground="Wheat" Grid.Column="1" Margin="342,641,376,217" Grid.RowSpan="2"/>
+        <Label Content="Enabled" FontSize="20" Foreground="Wheat" Grid.Column="1" Grid.Row="1" Margin="337,20,381,188"/>
+        <CheckBox Height="15" Width="16" Grid.Column="1" Margin="424,32,360,202" Grid.Row="1" IsChecked="{Binding Path=SimplexEnabled, Mode=TwoWay}"/>
+        <Label Content="Random Seed" FontSize="20" Foreground="Wheat" Grid.Column="1" Grid.Row="1" Margin="283,46,381,162"/>
+        <CheckBox Height="15" Width="16" Grid.Column="1" Margin="424,60,360,176" Grid.Row="1" IsChecked="{Binding Path=SimplexRandomSeed, Mode=TwoWay}"/>
+        <Label Content="Seed" FontSize="20" Foreground="Wheat" Grid.Column="1" Grid.Row="1" Margin="319,86,417,122"/>
+        <TextBox Text="{Binding Path=SimplexSeed, Mode=TwoWay}" FontSize="20" Grid.Column="1" Grid.Row="1" Height="30" Margin="388,92,355,128"/>
+        <Label Content="Frequency" FontSize="20" Foreground="Wheat" Grid.Column="1" Grid.Row="1" Margin="278,133,421,75"/>
+        <TextBox Text="{Binding Path=SimplexFrequency, Mode=TwoWay}" FontSize="20" Grid.Column="1" Grid.Row="1" Height="30" Margin="379,138,355,82"/>
+        <Slider Maximum="0.02" Minimum="0.002"  Grid.Column="1" Value="{Binding Path=SimplexFrequency, Mode=TwoWay}" Grid.Row="1" Margin="450,142,259,84" ValueChanged="Slider_ValueChangedSimplex"/>
+
+        <Label Content="Perlin" FontSize="20" Foreground="Wheat" Grid.Column="1" Margin="605,643,113,215" Grid.RowSpan="2"/>
+        <Label Content="Enabled" FontSize="20" Foreground="Wheat" Grid.Column="1" Grid.Row="1" Margin="592,22,126,186"/>
+        <CheckBox Height="15" Width="16" Grid.Column="1" Margin="687,34,97,202" Grid.Row="1" IsChecked="{Binding Path=PerlinEnabled, Mode=TwoWay}"/>
+        <Label Content="Random Seed" FontSize="20" Foreground="Wheat" Grid.Column="1" Grid.Row="1" Margin="546,48,118,160"/>
+        <CheckBox Height="15" Width="16" Grid.Column="1" Margin="687,60,97,175" Grid.Row="1" IsChecked="{Binding Path=PerlinRandomSeed, Mode=TwoWay}"/>
+        <Label Content="Seed" FontSize="20" Foreground="Wheat" Grid.Column="1" Grid.Row="1" Margin="580,89,159,119"/>
+        <TextBox Text="{Binding Path=PerlinSeed, Mode=TwoWay}" FontSize="20" Grid.Column="1" Grid.Row="1" Height="30" Margin="646,95,97,125"/>
+        <Label Content="Frequency" FontSize="20" Foreground="Wheat" Grid.Column="1" Grid.Row="1" Margin="546,133,132,75"/>
+        <TextBox Text="{Binding Path=PerlinFrequency, Delay=1,  Mode=TwoWay}" FontSize="20"  Grid.Column="1" Grid.Row="1" Height="30" Margin="646,138,87,82"/>
+        <Slider Maximum="0.02" Minimum="0.002"  Grid.Column="1" Value="{Binding Path=PerlinFrequency, Mode=TwoWay}" Grid.Row="1" Margin="718,142,0,83" ValueChanged="Slider_ValueChangedPerlin"/>
+
+        <TextBox Text="{Binding Path=ImageSize, Mode=TwoWay}" FontSize="20" Grid.Column="1" Grid.Row="0" Height="30" Width="80" Margin="432,610,288,10"/>
+        <Label Content="Image Height and Width" FontSize="20" Foreground="Wheat" Grid.Column="1" Margin="187,608,370,0"/>
+
+
+        <Label Content="Noise Max Height" FontSize="20" Foreground="Wheat" Grid.Column="0" Grid.Row="1" Height="40" Margin="296,142,328,68"/>
+        <TextBox Text="{Binding Path=NoiseHeight, Mode=TwoWay}" FontSize="20" Grid.Column="0" Grid.Row="1" Height="30" Width="80" Margin="472,147,248,73"/>
+        <Button Height="30" Content="Generate Terrain with Noise" Click="Button_Click_GenerateTerrainNoise" Margin="378,182,256,38" Grid.Row="1"/>
+
+        <Label Content="Rain Cycles" FontSize="20" Foreground="Wheat" Grid.Column="0" Grid.Row="1" Height="40" Width="110" Margin="357,31,333,179"/>
+        <TextBox Text="{Binding Path=HydroCycles, Mode=TwoWay}" FontSize="20" Grid.Column="0" Grid.Row="1" Height="30" Width="80" Margin="472,36,248,184"/>
+        <Button Height="30" Content="Erode Terrain" Click="Button_Click_HydraulicErosion" Width="123" Margin="400,86,277,134" Grid.Row="1"/>
+
+        <Button Height="30" Content="Save Mesh" Click="Button_Click_SaveMesh" Width="123" Margin="627,113,50,107" Grid.Row="1"/>
+        <Button Height="30" Content="Save Noise As Image" Click="Button_Click_SaveNoiseImage" Width="123" Margin="168,182,509,38" Grid.Row="1" Grid.Column="1"/>
+
+    </Grid>
+</Window>
